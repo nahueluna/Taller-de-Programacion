@@ -1,0 +1,111 @@
+programa Pr2_ej3b
+procesos
+  proceso reubicar(E Ca:numero)
+  comenzar
+    si(PosAv = 10)
+      Pos(21, Ca)
+    sino
+      Pos(31, Ca)
+  fin
+  proceso recorridoEquipoA(ES cantP:numero)
+  comenzar
+    si((PosAv = 1) | (PosAv = 21))
+      realizarCaPapel(cantP)
+      EnviarMensaje(cantP, robotA2)
+      RecibirMensaje(cantP, robotA2)
+    sino
+      RecibirMensaje(cantP, robotA1)
+      realizarCaPapel(cantP)
+      EnviarMensaje(cantP, robotA1)
+  fin
+  proceso recorridoEquipoB(ES cantF:numero)
+  comenzar
+    si((PosAv = 1) | (PosAv = 21))
+      realizarCaFlor(cantF)
+      EnviarMensaje(cantF, robotB2)
+      RecibirMensaje(cantF, robotB2)
+    sino
+      RecibirMensaje(cantF, robotB1)
+      realizarCaFlor(cantF)
+      EnviarMensaje(cantF, robotB1)
+  fin
+  proceso juntarPapel(ES p:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+  proceso juntarFlor(ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+  fin
+  proceso realizarCaFlor(ES cantF:numero)
+  comenzar
+    repetir 9
+      juntarFlor(cantF)
+      mover
+    juntarFlor(cantF)
+  fin
+  proceso realizarCaPapel(ES cantP:numero)
+  comenzar
+    repetir 9
+      juntarPapel(cantP)
+      mover
+    juntarPapel(cantP)
+  fin
+areas
+  AreaA: AreaPC(1, 1, 40, 1)
+  AreaB: AreaPC(1, 5, 40, 5)
+robots
+  robot equipoA
+  variables
+    cantP:numero
+  comenzar
+    cantP:=0
+    derecha
+    recorridoEquipoA(cantP)
+    reubicar(PosCa)
+    recorridoEquipoA(cantP)
+    si(PosAv = 40)
+      Informar('cant_papeles', cantP)
+  fin
+  robot equipoB
+  variables
+    cantF:numero
+  comenzar
+    cantF:=0
+    derecha
+    recorridoEquipoB(cantF)
+    reubicar(PosCa)
+    recorridoEquipoB(cantF)
+    si(PosAv = 40)
+      Informar('cant_flores', cantF)
+  fin
+variables
+  robotA1: equipoA
+  robotA2: equipoA
+  robotB1: equipoB
+  robotB2: equipoB
+comenzar
+  AsignarArea(robotA1, AreaA)
+  AsignarArea(robotA2, AreaA)
+  AsignarArea(robotB1, AreaB)
+  AsignarArea(robotB2, AreaB)
+  Iniciar(robotA1, 1, 1)
+  Iniciar(robotA2, 11, 1)
+  Iniciar(robotB1, 1, 5)
+  Iniciar(robotB2, 11, 5)
+fin
+
+{Para aumentar la cantidad de segmentos recorridos por cada equipo, solo}
+{debe modificarse la cantidad de "RecorridoA" (o B), de "Reubicar" y la}
+{condición de PosAv para determinar si es el robot 1 o 2 del recorrido.}
+{Para ello se utiliza la estructura de programa principal propuesta,}
+{agregando un repetir para el recorrido y reubicación, según la cantidad}
+{de segmentos que se quiera realizar.}
+{Para la condición de PosAv, se puede hacer más genérica para evitar}
+{agregar tantas condiciones con or. Nótese que el robot 1 siempre}
+{empieza en avenidas impares y el robot 2 en avenidas pares. Esta sería}
+{la condición para decidir que parte del código se ejecutará.}

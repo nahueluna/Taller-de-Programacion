@@ -1,0 +1,90 @@
+programa Pr3_ej4a
+procesos
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+  fin
+  proceso recibirFinalizacion(ES ultimo:numero)
+  comenzar
+    RecibirMensaje(ultimo, *)
+    RecibirMensaje(ultimo, *)
+    RecibirMensaje(ultimo, *)
+    RecibirMensaje(ultimo, *)
+  fin
+  proceso dejarFlor(E avIni:numero; E caIni:numero)
+  comenzar
+    BloquearEsquina(11, 11)
+    Pos(11, 11)
+    LiberarEsquina(10, 10)
+    depositarFlor
+    Pos(avIni, caIni)
+    LiberarEsquina(11, 11)
+  fin
+  proceso operarConFlores(E quienSoy:numero; E avIni:numero; E caIni:numero)
+  variables
+    continuar:boolean
+  comenzar
+    continuar:=V
+    mientras(continuar)
+      BloquearEsquina(10, 10)
+      Pos(10, 10)
+      si(HayFlorEnLaEsquina)
+        tomarFlor
+        dejarFlor(avIni, caIni)
+      sino
+        continuar:=F
+        EnviarMensaje(quienSoy, robotJefe)
+        Pos(avIni, caIni)
+        LiberarEsquina(10, 10)
+  fin
+areas
+  AreaRecoleccion: AreaC(10, 10, 11, 11)
+  AreaJefe: AreaP(1, 1, 1, 1)
+  AreaInicio: AreaPC(9, 9, 9, 12)
+robots
+  robot jefe
+  variables
+    ultimo:numero
+  comenzar
+    identificarRobots
+    recibirFinalizacion(ultimo)
+    Informar('Ultimo',ultimo)
+    Pos(11, 11)
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  robot recolector
+  variables
+    quienSoy, avIni, caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    RecibirMensaje(quienSoy, robotJefe)
+    operarConFlores(quienSoy, avIni, caIni)
+  fin
+variables
+  robotJefe: jefe
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
+  robot4: recolector
+comenzar
+  AsignarArea(robotJefe, AreaJefe)
+  AsignarArea(robotJefe, AreaRecoleccion)
+  AsignarArea(robot1, AreaInicio)
+  AsignarArea(robot1, AreaRecoleccion)
+  AsignarArea(robot2, AreaInicio)
+  AsignarArea(robot2, AreaRecoleccion)
+  AsignarArea(robot3, AreaInicio)
+  AsignarArea(robot3, AreaRecoleccion)
+  AsignarArea(robot4, AreaInicio)
+  AsignarArea(robot4, AreaRecoleccion)
+  Iniciar(robotJefe, 1, 1)
+  Iniciar(robot1, 9, 9)
+  Iniciar(robot2, 9, 10)
+  Iniciar(robot3, 9, 11)
+  Iniciar(robot4, 9, 12)
+fin

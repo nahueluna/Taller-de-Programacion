@@ -1,0 +1,196 @@
+programa Pr3_ej6a
+procesos
+  proceso juntarFlores
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso juntarPapeles
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+  fin
+  proceso asignarCalle(E quien:numero; E calle:numero)
+  comenzar
+    si(quien=1)
+      EnviarMensaje(calle, robot1)
+    sino
+      si(quien=2)
+        EnviarMensaje(calle, robot2)
+      sino
+        EnviarMensaje(calle, robot3)
+  fin
+  proceso hacerLado1(E lado:numero)
+  comenzar
+    repetir lado
+      juntarFlores
+      mover
+    juntarFlores
+    derecha
+  fin
+  proceso hacerLadoIntersec1(E coord1:numero; E coord2:numero; E mov:numero)
+  comenzar
+    repetir mov - 2
+      juntarFlores
+      mover
+      si((PosAv + 1 = coord1) & (PosCa = coord2)) | ((PosAv = coord2) & (PosCa - 1 = coord1))
+        BloquearEsquina(PosAv, PosCa)
+        repetir 2
+          juntarFlores
+          mover
+        LiberarEsquina(PosAv - 2, PosCa - 2)
+      juntarFlores
+    derecha
+  fin
+  proceso hacerLado2(E lado:numero)
+  comenzar
+    repetir lado
+      juntarFlores
+      juntarPapeles
+      mover
+    juntarFlores
+    juntarPapeles
+    derecha
+  fin
+  proceso hacerLadoIntersec2(E coord1:numero; E coord2:numero; E mov:numero)
+  comenzar
+    repetir mov - 2
+      juntarFlores
+      juntarPapeles
+      mover
+      si((PosAv = coord1) & (PosCa + 1 = coord2)) | ((PosAv - 1 = coord2) & (PosCa = coord1))
+        BloquearEsquina(PosAv, PosCa)
+        repetir 2
+          juntarFlores
+          juntarPapeles
+          mover
+        LiberarEsquina(PosAv - 2, PosCa - 2)
+      juntarFlores
+      juntarPapeles
+    derecha
+  fin
+  proceso hacerLado3(E lado:numero)
+  comenzar
+    repetir lado
+      juntarPapeles
+      mover
+    juntarFlores
+    derecha
+  fin
+  proceso hacerLadoIntersec3(E coord1:numero; E coord2:numero; E mov:numero)
+  comenzar
+    repetir (mov - 2)
+      juntarPapeles
+      mover
+      si((PosAv = coord1) & (PosCa = coord2)) | ((PosAv = coord2) & (PosCa - 1 = coord1))
+        BloquearEsquina(PosAv, PosCa)
+        repetir 2
+          juntarPapeles
+          mover
+        LiberarEsquina(PosAv - 2, PosCa - 2)
+      juntarPapeles
+    derecha
+  fin
+  proceso informarYtrasladar(E quienSoy:numero)
+  variables
+    calle:numero
+  comenzar
+    EnviarMensaje(quienSoy, robotJefe)
+    RecibirMensaje(calle, robotJefe)
+    Pos(1, calle)
+    derecha
+  fin
+areas
+  AreaJefe: AreaP(1, 1, 1, 1)
+  AreaCuadrante: AreaPC(2, 2, 16, 16)
+  AreaRecorrido: AreaPC(1, 20, 100, 22)
+robots
+  robot jefe
+  variables
+    quien, calle:numero
+  comenzar
+    calle:=20
+    identificarRobots
+    repetir 3
+      RecibirMensaje(quien, *)
+      asignarCalle(quien, calle)
+      calle:= calle + 1
+  fin
+  robot recorredor1
+  variables
+    quienSoy:numero
+  comenzar
+    RecibirMensaje(quienSoy, robotJefe)
+    hacerLado1(6)
+    repetir 2
+      hacerLadoIntersec1(5, 8, 6) {esq1, esq2, mov}
+    hacerLado1(6)
+    
+    informarYtrasladar(quienSoy)
+    
+    mientras(PosAv < 100) & (HayFlorEnLaBolsa)
+      depositarFlor
+      mover
+  fin
+  robot recorredor2
+  variables
+    quienSoy:numero
+    continuar:boolean
+  comenzar
+    continuar:=V
+    RecibirMensaje(quienSoy, robotJefe)
+    hacerLadoIntersec2(5, 8, 10)
+    repetir 2
+      hacerLadoIntersec2(15, 9, 10)
+    hacerLadoIntersec2(5, 8, 10)
+    
+    informarYtrasladar(quienSoy)
+    
+    mientras(PosAv < 100) & (continuar)
+      si(HayFlorEnLaBolsa)
+        depositarFlor
+      si(HayPapelEnLaBolsa)
+        depositarPapel
+      continuar:= HayFlorEnLaBolsa | HayPapelEnLaBolsa
+      mover
+  fin
+  robot recorredor3
+  variables
+    quienSoy:numero
+  comenzar
+    RecibirMensaje(quienSoy, robotJefe)
+    hacerLadoIntersec3(9, 15, 7)
+    repetir 2
+      hacerLado3(7)
+    hacerLadoIntersec3(9, 15, 7)
+    
+    informarYtrasladar(quienSoy)
+    
+    mientras(PosAv < 100) & (HayPapelEnLaBolsa)
+      depositarPapel
+      mover
+  fin
+variables
+  robotJefe: jefe
+  robot1: recorredor1
+  robot2: recorredor2
+  robot3: recorredor3
+comenzar
+  AsignarArea(robotJefe, AreaJefe)
+  AsignarArea(robot1, AreaCuadrante)
+  AsignarArea(robot1, AreaRecorrido)
+  AsignarArea(robot2, AreaCuadrante)
+  AsignarArea(robot2, AreaRecorrido)
+  AsignarArea(robot3, AreaCuadrante)
+  AsignarArea(robot3, AreaRecorrido)
+  Iniciar(robotJefe, 1, 1)
+  Iniciar(robot1, 2, 2)
+  Iniciar(robot2, 5, 5)
+  Iniciar(robot3, 9, 9)
+fin

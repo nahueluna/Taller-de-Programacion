@@ -1,0 +1,77 @@
+programa Pr1_ej3
+procesos
+  proceso juntarPapel(ES p:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+  proceso juntarFlor(ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+  fin
+  proceso dejarFlor
+  comenzar
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+  fin
+  proceso dejarPapel
+  comenzar
+    mientras(HayPapelEnLaBolsa)
+      depositarPapel
+  fin
+  proceso evaluarEsquina(ES p:numero; ES f:numero)
+  comenzar
+    juntarFlor(f)
+    juntarPapel(p)
+    dejarFlor
+    dejarPapel
+  fin
+  proceso realizarLado(E long:numero; ES papeles:numero; ES flores:numero)
+  comenzar
+    repetir long
+      evaluarEsquina(papeles, flores)
+      mover
+    derecha
+  fin
+  proceso hacerEscalon(E escalon:numero; ES cantEsca:numero)
+  variables
+    cantPap, cantFlor:numero
+  comenzar
+    cantPap:=0
+    cantFlor:=0
+    repetir 2
+      realizarLado(escalon, cantPap, cantFlor)
+    derecha
+    si((cantFlor + 1) = cantPap)
+      cantEsca:= cantEsca + 1
+  fin
+areas
+  ciudad: AreaC(12, 6, 32, 24)
+robots
+  robot tipo1
+  variables
+    cantEscalones, escalon:numero
+  comenzar
+    cantEscalones:=0
+    escalon:=0
+    repetir 4
+      escalon:= escalon + 1
+      hacerEscalon(escalon, cantEscalones)
+      derecha
+    Informar(cantEscalones)
+  fin
+variables
+  robot1:tipo1
+  robot2:tipo1
+  robot3:tipo1
+comenzar
+  AsignarArea(robot1, ciudad)
+  AsignarArea(robot2, ciudad)
+  AsignarArea(robot3, ciudad)
+  Iniciar(robot1, 12, 14)
+  Iniciar(robot2, 17, 10)
+  Iniciar(robot3, 22, 6)
+fin

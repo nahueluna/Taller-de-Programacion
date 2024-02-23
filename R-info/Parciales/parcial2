@@ -1,0 +1,138 @@
+programa parcial2
+procesos
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+  fin
+  proceso recibirCantidadElementos(E quien:numero; ES cantElem:numero)
+  comenzar
+    si(quien=1)
+      RecibirMensaje(cantElem, robot1)
+    sino
+      si(quien=2)
+        RecibirMensaje(cantElem, robot2)
+      sino
+        si(quien=3)
+          RecibirMensaje(cantElem, robot3)
+        sino
+          RecibirMensaje(cantElem, robot4)
+  fin
+  proceso maximo(E quien:numero; E cantElem:numero; ES maxR:numero; ES maxElem:numero)
+  comenzar
+    si(cantElem > maxElem)
+      maxElem := cantElem
+      maxR := quien
+  fin
+  proceso juntar(ES cantE:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantE:= cantE + 1
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      cantE:= cantE + 1
+  fin
+  proceso juntarEnEsquina(ES cantElem:numero)
+  variables
+    av, ca, avAct:numero
+  comenzar
+    avAct:= PosAv
+    Random(av, 45, 62)
+    Random(ca, 48, 69)
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+    juntar(cantElem)
+    EnviarMensaje(V, robotJefe)
+    Pos(avAct, 10)
+    LiberarEsquina(av, ca)
+  fin
+  proceso depositar
+  comenzar
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+    mientras(HayPapelEnLaBolsa)
+      depositarPapel
+  fin
+  proceso enviarConfirmacion
+  comenzar
+    EnviarMensaje(V, robot1)
+    EnviarMensaje(V, robot2)
+    EnviarMensaje(V, robot3)
+    EnviarMensaje(V, robot4)
+  fin
+areas
+  AreaComun: AreaPC(45, 48, 62, 69)
+  AreaInicio: AreaPC(10, 10, 13, 10)
+  AreaJefe: AreaP(1, 1, 1, 1)
+robots
+  robot jefe
+  variables
+    contador, quien, cantElem, maxR, maxElem:numero
+    continuar:boolean
+  comenzar
+    contador:=0
+    maxElem:=-1
+    maxR:=0
+    identificarRobots
+    mientras(contador < 4)
+      RecibirMensaje(continuar, *)
+      si (continuar = F)
+        contador:= contador + 1
+        
+    enviarConfirmacion
+    
+    repetir 4
+      RecibirMensaje(quien, *)
+      recibirCantidadElementos(quien, cantElem)
+      maximo(quien, cantElem, maxR, maxElem)
+      
+    EnviarMensaje(maxR, robot1)
+    EnviarMensaje(maxR, robot2)
+    EnviarMensaje(maxR, robot3)
+    EnviarMensaje(maxR, robot4)
+  fin
+  robot recolector
+  variables
+    quienSoy, cantElem, ganador:numero
+    continuar:boolean
+  comenzar
+    cantElem:=0
+    RecibirMensaje(quienSoy, robotJefe)
+    repetir 5
+      juntarEnEsquina(cantElem)
+    EnviarMensaje(F, robotJefe)
+    
+    RecibirMensaje(continuar, robotJefe)
+    
+    EnviarMensaje(quienSoy, robotJefe)
+    EnviarMensaje(cantElem, robotJefe)
+    
+    RecibirMensaje(ganador, robotJefe)
+    si(ganador = quienSoy)
+      depositar
+  fin
+variables
+  robotJefe: jefe
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
+  robot4: recolector
+comenzar
+  AsignarArea(robotJefe, AreaJefe)
+  AsignarArea(robot1, AreaInicio)
+  AsignarArea(robot1, AreaComun)
+  AsignarArea(robot2, AreaInicio)
+  AsignarArea(robot2, AreaComun)
+  AsignarArea(robot3, AreaInicio)
+  AsignarArea(robot3, AreaComun)
+  AsignarArea(robot4, AreaInicio)
+  AsignarArea(robot4, AreaComun)
+  Iniciar(robotJefe, 1, 1)
+  Iniciar(robot1, 10, 10)
+  Iniciar(robot2, 11, 10)
+  Iniciar(robot3, 12, 10)
+  Iniciar(robot4, 13, 10)
+fin

@@ -1,0 +1,185 @@
+programa parcial4
+
+procesos
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+  fin
+
+  proceso recibirElementos(ES cantF:numero; ES cantP:numero; E quien:numero)
+  comenzar
+    si(quien = 1)
+      RecibirMensaje(cantF, robot1)
+      RecibirMensaje(cantP, robot1)
+    sino
+      si(quien = 2)
+        RecibirMensaje(cantF, robot2)
+        RecibirMensaje(cantP, robot2)
+      sino
+        si(quien = 3)
+          RecibirMensaje(cantF, robot3)
+          RecibirMensaje(cantP, robot3)
+        sino
+          RecibirMensaje(cantF, robot4)
+          RecibirMensaje(cantP, robot4)
+  fin
+  
+  proceso enviarUbicacionesIniciales
+  comenzar
+    EnviarMensaje(2, robot1) {calle}
+    EnviarMensaje(6, robot2) {calle}
+    EnviarMensaje(2, robot3) {avenida}
+    EnviarMensaje(6, robot4) {avenida}
+  fin
+  
+  proceso juntar(ES cantF:numero; ES cantP:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF + 1
+    
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      cantP:= cantP + 1
+  fin
+  
+  proceso hacerLadoExtenso(ES cantF:numero; ES cantP:numero; E nAv:numero; E nCa:numero)
+  comenzar
+    repetir 4
+      BloquearEsquina(PosAv + nAv, PosCa + nCa)
+      repetir 2
+        juntar(cantF, cantP)
+        mover
+      LiberarEsquina(PosAv - nAv, PosCa - nCa)
+    derecha
+
+  fin
+  
+  proceso hacerLadoCorto(ES cantF:numero; ES cantP:numero)
+  comenzar
+    repetir 2
+      juntar(cantF, cantP)
+      mover
+    derecha
+  fin
+  
+areas
+  AreaInicio1: AreaP(20, 1, 20, 1)
+  AreaInicio2: AreaP(20, 2, 20, 2)
+  AreaInicio3: AreaP(20, 4, 20, 4)
+  AreaInicio4: AreaP(20, 5, 20, 5)
+  AreaJefe: AreaP(20, 15, 20, 15)
+  
+  AreaCuadrante1A: AreaP(1, 2, 1, 4)
+  AreaCuadrante1B: AreaP(5, 2, 5, 4)
+  AreaCuadrante1C: AreaP(9, 2, 9, 4)
+  
+  AreaCuadrante2A: AreaP(1, 6, 1, 8)
+  AreaCuadrante2B: AreaP(5, 6, 5, 8)
+  AreaCuadrante2C: AreaP(9, 6, 9, 8)
+  
+  AreaCuadrante3: AreaPC(2, 1, 4, 9)
+  
+  AreaCuadrante4: AreaPC(6, 1, 8, 9)
+  
+robots
+  robot jefe
+  variables
+    quien, cantF, cantP, totalF, totalP:numero
+  comenzar
+    totalF:=0
+    totalP:=0
+    
+    identificarRobots
+    enviarUbicacionesIniciales
+    repetir 4
+      RecibirMensaje(quien, *)
+      recibirElementos(cantF, cantP, quien)
+      totalF:= totalF + cantF
+      totalP:= totalP + cantP
+      
+    Informar('Total_flores',totalF)
+    Informar('Total_papeles',totalP)
+  fin
+  
+  robot juntadorVertical
+  variables
+    quienSoy, posX, cantF, cantP, unoNegativo:numero
+  comenzar
+    cantP:=0
+    cantF:=0
+    unoNegativo:= -1
+    RecibirMensaje(quienSoy, robotJefe)
+    RecibirMensaje(posX, robotJefe)
+    
+    Pos(posX, 1)
+    hacerLadoExtenso(cantF, cantP, 0, 1)
+    hacerLadoCorto(cantF, cantP)
+    hacerLadoExtenso(cantF, cantP, 0, unoNegativo)
+    hacerLadoCorto(cantF, cantP)
+      
+    EnviarMensaje(quienSoy, robotJefe)
+    EnviarMensaje(cantF, robotJefe)
+    EnviarMensaje(cantP, robotJefe)
+  fin
+  
+  robot juntadorHorizontal
+  variables
+    quienSoy, posY, cantF, cantP, unoNegativo:numero
+  comenzar
+    cantP:=0
+    cantF:=0
+    unoNegativo:= -1
+    RecibirMensaje(quienSoy, robotJefe)
+    RecibirMensaje(posY, robotJefe)
+    
+    Pos(1, posY)
+    hacerLadoCorto(cantF, cantP)
+    hacerLadoExtenso(cantF, cantP, 1, 0)
+    hacerLadoCorto(cantF, cantP)
+    hacerLadoExtenso(cantF, cantP, unoNegativo, 0)
+    
+    EnviarMensaje(quienSoy, robotJefe)
+    EnviarMensaje(cantF, robotJefe)
+    EnviarMensaje(cantP, robotJefe)
+  fin
+  
+variables
+  robotJefe: jefe
+  robot1: juntadorHorizontal
+  robot2: juntadorHorizontal
+  robot3: juntadorVertical
+  robot4: juntadorVertical
+  
+comenzar
+  AsignarArea(robotJefe, AreaJefe)
+  
+  AsignarArea(robot1, AreaInicio1)
+  AsignarArea(robot1, AreaCuadrante1A)
+  AsignarArea(robot1, AreaCuadrante1B)
+  AsignarArea(robot1, AreaCuadrante1C)
+  AsignarArea(robot1, AreaCuadrante3)
+  AsignarArea(robot1, AreaCuadrante4)
+  
+  AsignarArea(robot2, AreaInicio2)
+  AsignarArea(robot2, AreaCuadrante2A)
+  AsignarArea(robot2, AreaCuadrante2B)
+  AsignarArea(robot2, AreaCuadrante2C)
+  AsignarArea(robot2, AreaCuadrante3)
+  AsignarArea(robot2, AreaCuadrante4)
+  
+  AsignarArea(robot3, AreaInicio3)
+  AsignarArea(robot3, AreaCuadrante3)
+  
+  AsignarArea(robot4, AreaInicio4)
+  AsignarArea(robot4, AreaCuadrante4)
+  
+  Iniciar(robotJefe, 20, 15)
+  Iniciar(robot1, 20, 1)
+  Iniciar(robot2, 20, 2)
+  Iniciar(robot3, 20, 4)
+  Iniciar(robot4, 20, 5)
+fin

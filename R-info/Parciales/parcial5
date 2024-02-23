@@ -1,0 +1,141 @@
+programa parcial5
+
+procesos
+  proceso enviarMedidas(E quien:numero; E largo:numero; E ancho:numero)
+  comenzar
+    si(quien = 1)
+      EnviarMensaje(largo, robot1)
+      EnviarMensaje(ancho, robot1)
+    sino
+      si(quien = 2)
+        EnviarMensaje(largo, robot2)
+        EnviarMensaje(ancho, robot2)
+      sino
+        EnviarMensaje(largo, robot3)
+        EnviarMensaje(ancho, robot3)
+  fin
+  
+  proceso recibirFlores(E quien:numero; ES cantF:numero)
+  comenzar
+    si(quien = 1)
+      RecibirMensaje(cantF, robot1)
+    sino
+      si(quien = 2)
+        RecibirMensaje(cantF, robot2)
+      sino
+        RecibirMensaje(cantF, robot3)
+  fin
+  
+  proceso maximo(E cantF:numero; E quien:numero; ES maxF:numero; ES maxR:numero)
+  comenzar
+    si(cantF > maxF)
+      maxF:= cantF
+      maxR:= quien
+  fin
+  
+  proceso juntarFlores(ES cantF:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF + 1
+  fin
+  
+  proceso hacerLado(E lado:numero; ES cantF:numero)
+  comenzar
+    repetir lado
+      juntarFlores(cantF)
+      mover
+    derecha
+  fin
+  
+  proceso realizarRectangulo(E alto:numero; E ancho:numero; ES cantF:numero)
+  comenzar
+    repetir 2
+      hacerLado(alto, cantF)
+      hacerLado(ancho, cantF)
+  fin
+  
+  proceso depositarEnEsquina
+  variables
+    avIni, caIni:numero
+  comenzar
+    avIni:= PosAv
+    caIni:= PosCa
+    BloquearEsquina(25, 25)
+    Pos(25, 25)
+    depositarFlor
+    Pos(avIni, caIni)
+    LiberarEsquina(25, 25)
+  fin
+  
+areas
+  AreaCoordinador: AreaP(24, 24, 24, 24)
+  AreaRectangulo1: AreaP(1, 1, 6, 11)
+  AreaRectangulo2: AreaP(7, 1, 12, 11)
+  AreaRectangulo3: AreaP(13, 1, 18, 11)
+  AreaDeposito: AreaPC(25, 25, 25, 25)
+robots
+  robot coordinador
+  variables
+    largo, ancho, quien, cantF, maxR, maxF:numero
+  comenzar
+    maxR:=0
+    maxF:=-1
+    quien:=1
+    
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    
+    repetir 3
+      Random(largo, 1, 10)
+      Random(ancho, 1, 5)
+      enviarMedidas(quien, largo, ancho)
+      quien:= quien + 1
+    
+    repetir 3
+      RecibirMensaje(quien, *)
+      recibirFlores(quien, cantF)
+      maximo(cantF, quien, maxF, maxR)
+      
+    Informar('Ganador',maxR)
+  fin
+  
+  robot recolector
+  variables
+    quienSoy, alto, ancho, cantF:numero
+  comenzar
+    cantF:=0
+    RecibirMensaje(quienSoy, robotCoordinador)
+    RecibirMensaje(alto, robotCoordinador)
+    RecibirMensaje(ancho, robotCoordinador)
+    
+    realizarRectangulo(alto, ancho, cantF)
+    Informar(cantF)
+    repetir cantF
+      depositarEnEsquina
+      
+    EnviarMensaje(quienSoy, robotCoordinador)
+    EnviarMensaje(cantF, robotCoordinador)
+  fin
+  
+variables
+  robotCoordinador: coordinador
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
+
+comenzar
+  AsignarArea(robotCoordinador, AreaCoordinador)
+  AsignarArea(robot1, AreaRectangulo1)
+  AsignarArea(robot1, AreaDeposito)
+  AsignarArea(robot2, AreaRectangulo2)
+  AsignarArea(robot2, AreaDeposito)
+  AsignarArea(robot3, AreaRectangulo3)
+  AsignarArea(robot3, AreaDeposito)
+  
+  Iniciar(robotCoordinador, 24, 24)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 7, 1)
+  Iniciar(robot3, 13, 1)
+fin

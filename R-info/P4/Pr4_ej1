@@ -1,0 +1,135 @@
+programa pr4_ej1
+procesos
+  proceso juntarFlores
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso juntarYretornar
+  comenzar
+    mover
+    juntarFlores
+    Pos(PosAv, PosCa - 1)
+  fin
+  proceso avanzarDepositando
+  comenzar
+    mientras(PosCa < 100) & (HayFlorEnLaBolsa)
+      depositarFlor
+      mover
+  fin
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+  fin
+  proceso recibirFlores(E quien:numero; ES cantF:numero)
+  comenzar
+    si(quien=1)
+      RecibirMensaje(cantF, robot1)
+    sino
+      si(quien=2)
+        RecibirMensaje(cantF, robot2)
+      sino
+        RecibirMensaje(cantF, robot3)
+  fin
+  proceso recibirAvenida(E quien:numero; ES av:numero)
+  comenzar
+    si(quien=1)
+      RecibirMensaje(av, robot1)
+    sino
+      si(quien=2)
+        RecibirMensaje(av, robot2)
+      sino
+        RecibirMensaje(av, robot3)
+  fin
+  proceso recibirCalle(E quien:numero; ES ca:numero)
+  comenzar
+    si(quien=1)
+      RecibirMensaje(ca, robot1)
+    sino
+      si(quien=2)
+        RecibirMensaje(ca, robot2)
+      sino
+        RecibirMensaje(ca, robot3)
+  fin
+  proceso dejarFlores(E cantF:numero)
+  comenzar
+    repetir cantF
+      depositarFlor
+  fin
+  proceso enviarACK(E quien:numero)
+  comenzar
+    si(quien=1)
+      EnviarMensaje(V, robot1)
+    sino
+      si(quien=2)
+        EnviarMensaje(V, robot2)
+      sino
+        EnviarMensaje(V, robot3)
+  fin
+areas
+  AreaServidor: AreaP(100,100,100,100)
+  Area1: AreaPC(1,1,1,100)
+  Area2: AreaPC(2,1,2,100)
+  Area3: AreaPC(3,1,3,100)
+robots
+  robot cliente
+  variables
+    quienSoy, cantFlores, av, ca:numero
+    confirmacion:boolean
+  comenzar
+    RecibirMensaje(quienSoy,robotServidor)
+    mientras(PosCa < 100)
+      av:=PosAv
+      ca:=PosCa
+      Random(cantFlores,1,4)
+      EnviarMensaje(quienSoy,robotServidor)
+      EnviarMensaje(cantFlores,robotServidor)
+      EnviarMensaje(av,robotServidor)
+      EnviarMensaje((ca + 1),robotServidor)
+      RecibirMensaje(confirmacion,robotServidor)
+      juntarYretornar
+      avanzarDepositando
+    si(HayFlorEnLaBolsa)
+      depositarFlor
+    EnviarMensaje(quienSoy, robotServidor)
+    EnviarMensaje(0, robotServidor)
+  fin
+  robot servidor
+  variables
+    quien, cantF, av, ca, robotsTerminados:numero
+  comenzar
+    robotsTerminados:=0
+    identificarRobots
+    mientras(robotsTerminados < 3)
+      RecibirMensaje(quien, *)
+      recibirFlores(quien, cantF)
+      si(cantF <> 0)
+        recibirAvenida(quien, av)
+        recibirCalle(quien, ca)
+        Pos(av, ca)
+        dejarFlores(cantF)
+        Pos(100, 100)
+        enviarACK(quien)
+      sino
+        robotsTerminados:= robotsTerminados + 1
+  fin
+variables
+  robotServidor: servidor
+  robot1: cliente
+  robot2: cliente
+  robot3: cliente
+comenzar
+  AsignarArea(robotServidor, AreaServidor)
+  AsignarArea(robotServidor, Area1)
+  AsignarArea(robotServidor, Area2)
+  AsignarArea(robotServidor, Area3)
+  AsignarArea(robot1, Area1)
+  AsignarArea(robot2, Area2)
+  AsignarArea(robot3, Area3)
+  Iniciar(robotServidor, 100, 100)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 2, 1)
+  Iniciar(robot3, 3, 1)
+fin

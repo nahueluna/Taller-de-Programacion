@@ -1,0 +1,100 @@
+programa Pr5_ej2
+procesos
+  proceso juntar
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso depositarEnEsquina
+  variables
+    avAct, caAct:numero
+  comenzar
+    avAct:=PosAv
+    caAct:=PosCa
+    BloquearEsquina(50, 50)
+    Pos(50, 50)
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+    LiberarEsquina(50, 50)
+  fin
+  proceso enviarConfirmacion(E quienSoy:numero)
+  comenzar
+    si(quienSoy=1)
+      EnviarMensaje(V, robot2)
+      EnviarMensaje(V, robot3)
+    sino
+      si(quienSoy=2)
+        EnviarMensaje(V, robot1)
+        EnviarMensaje(V, robot3)
+      sino
+        EnviarMensaje(V, robot1)
+        EnviarMensaje(V, robot2)
+  fin
+areas
+  AreaFiscalizador: AreaP(1, 4, 1, 4)
+  AreaRecorrido: AreaPC(1, 1, 100, 3)
+  AreaDeposito: AreaC(50, 50, 50, 50)
+robots
+  robot fiscalizador
+  variables
+    cantF:numero
+    finalizado:boolean
+  comenzar
+    cantF:=0
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    
+    RecibirMensaje(finalizado, *)
+    RecibirMensaje(finalizado, *)
+    RecibirMensaje(finalizado, *)
+    
+    Pos(50, 50)
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF + 1
+    
+    Informar('cantF',cantF)
+  fin
+  robot recolector
+  variables
+    quienSoy, contador:numero
+    continuar:boolean
+  comenzar
+    derecha
+    RecibirMensaje(quienSoy, robotFiscalizador)
+    mientras(PosAv < 100)
+      contador:=0
+      mientras(PosAv < 100) & (contador < 10)
+        juntar
+        mover
+        contador:= contador + 1
+      juntar
+      depositarEnEsquina
+      enviarConfirmacion(quienSoy)
+      RecibirMensaje(continuar, *)
+      RecibirMensaje(continuar, *)
+     
+    EnviarMensaje(V, robotFiscalizador)
+  fin
+variables
+  robotFiscalizador: fiscalizador
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
+comenzar
+  AsignarArea(robotFiscalizador, AreaFiscalizador)
+  AsignarArea(robotFiscalizador, AreaDeposito)
+  AsignarArea(robot1, AreaRecorrido)
+  AsignarArea(robot1, AreaDeposito)
+  AsignarArea(robot2, AreaRecorrido)
+  AsignarArea(robot2, AreaDeposito)
+  AsignarArea(robot3, AreaRecorrido)
+  AsignarArea(robot3, AreaDeposito)
+  Iniciar(robotFiscalizador, 1, 4)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 1, 2)
+  Iniciar(robot3, 1, 3)
+fin

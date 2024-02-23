@@ -1,0 +1,142 @@
+programa Pr3_ej2
+procesos
+  proceso llegadaCentro(E id:numero)
+  comenzar
+    BloquearEsquina(16, 16)
+    mover
+    EnviarMensaje(id, robotJefe)
+    repetir 2
+      derecha
+    mover
+    LiberarEsquina(16, 16)
+  fin
+  proceso izquierda
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso juntarF(ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+  fin
+  proceso juntarP(ES p:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+  proceso hacerLado(E lado:numero)
+  comenzar
+    repetir lado
+      mover
+  fin
+  proceso escalonRojo(E lado:numero; ES cantF:numero)
+  comenzar
+    hacerLado(lado)
+    juntarF(cantF)
+    derecha
+    hacerLado(lado)
+    juntarF(cantF)
+    izquierda
+  fin
+  proceso escalonAzul(E lado:numero; ES cantP:numero)
+  comenzar
+    hacerLado(lado)
+    juntarP(cantP)
+    izquierda
+    hacerLado(lado)
+    juntarP(cantP)
+    derecha
+  fin
+  proceso subirEscalonesAzul(E quienSoy:numero; ES cantP:numero)
+  variables
+    lado:numero
+  comenzar
+    lado:=5
+    mientras(lado > 1)
+      escalonAzul(lado, cantP)
+      lado:= lado - 1
+    mover
+    izquierda
+    llegadaCentro(quienSoy)
+    lado:=2
+    mientras(lado < 6)
+      escalonAzul(lado, cantP)
+      lado:= lado + 1
+  fin
+  proceso subirEscalonesRojo(E quienSoy:numero; ES cantF:numero)
+  variables
+    lado:numero
+  comenzar
+    lado:=5
+    mientras(lado > 1)
+      escalonRojo(lado, cantF)
+      lado:= lado - 1
+    mover
+    derecha
+    llegadaCentro(quienSoy)
+    lado:=2
+    mientras(lado < 6)
+      escalonRojo(lado, cantF)
+      lado:= lado + 1
+  fin
+areas
+  AreaRojo: AreaPC(1, 1, 15, 30)
+  AreaAzul: AreaP(17, 1, 31, 30)
+  AreaCentro: AreaPC(16, 16, 16, 16)
+robots
+  robot jefe
+  variables
+    ganador, perdedor: numero
+    termine:boolean
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    
+    RecibirMensaje(ganador, *)
+    si(ganador = 1)
+      RecibirMensaje(termine, robot1)
+    sino
+      RecibirMensaje(termine, robot2)
+    
+    RecibirMensaje(perdedor, *)
+    RecibirMensaje(termine, *)
+    
+    Informar('Ganador',ganador)
+  fin
+  robot rojo
+  variables
+    quienSoy, cantFlores:numero
+  comenzar
+    cantFlores:=0
+    RecibirMensaje(quienSoy, robotJefe)
+    subirEscalonesRojo(quienSoy, cantFlores)
+    EnviarMensaje(V, robotJefe)
+    Informar('Flores',cantFlores)
+  fin
+  robot azul
+  variables
+    quienSoy, cantPapeles:numero
+  comenzar
+    cantPapeles:=0
+    RecibirMensaje(quienSoy, robotJefe)
+    subirEscalonesAzul(quienSoy, cantPapeles)
+    EnviarMensaje(V, robotJefe)
+    Informar('Papeles',cantPapeles)
+  fin
+variables
+  robot1: rojo
+  robot2: azul
+  robotJefe: jefe
+comenzar
+  AsignarArea(robot1, AreaRojo)
+  AsignarArea(robot1, AreaCentro)
+  AsignarArea(robot2, AreaAzul)
+  AsignarArea(robot2, AreaCentro)
+  AsignarArea(robotJefe, AreaRojo)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 31, 1)
+  Iniciar(robotJefe, 15, 1)
+fin

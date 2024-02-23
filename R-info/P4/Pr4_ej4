@@ -1,0 +1,102 @@
+programa Pr4_ej4
+procesos
+  proceso enviarDatos(E quien:numero; E tarea:numero; E av:numero; E ca:numero)
+  comenzar
+    si(quien=1)
+      EnviarMensaje(tarea, robot1)
+      EnviarMensaje(av, robot1)
+      EnviarMensaje(ca, robot1)
+    sino
+      EnviarMensaje(tarea, robot2)
+      EnviarMensaje(av, robot2)
+      EnviarMensaje(ca, robot2)
+  fin
+  proceso juntarFlores
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso juntarPapeles
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso realizarTareas(E tarea:numero; E av:numero; E ca:numero; ES continuar:boolean)
+  variables
+    avAct, caAct:numero
+  comenzar
+    avAct:=PosAv
+    caAct:=PosCa
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+    si(tarea = 1)
+      juntarFlores
+    sino
+      si(tarea = 2)
+        juntarPapeles
+      sino
+        mientras(HayPapelEnLaBolsa) | (HayFlorEnLaBolsa)
+          si(HayFlorEnLaBolsa)
+            depositarFlor
+          si(HayPapelEnLaBolsa)
+            depositarPapel
+    Pos(avAct, caAct)
+    LiberarEsquina(av, ca)
+  fin
+areas
+  AreaJefe: AreaP(1, 1, 1, 1)
+  AreaInicio: AreaPC(2, 1, 3, 1)
+  AreaCuadrante: AreaPC(2, 2, 100, 100)
+robots
+  robot jefe
+  variables
+    quien, tarea, av, ca:numero
+    confirmacion:boolean
+  comenzar
+    repetir 10
+      Random(quien, 1, 2)
+      Random(tarea, 1, 3)
+      Random(av, 2, 100)
+      Random(ca, 2, 100)
+      enviarDatos(quien, tarea, av, ca)
+      RecibirMensaje(confirmacion, *)
+    EnviarMensaje(4, robot1)
+    EnviarMensaje(4, robot2)
+  fin
+  robot trabajador
+  variables
+    tarea, av, ca:numero
+    continuar:boolean
+  comenzar
+    continuar:=V
+    mientras(continuar)
+      RecibirMensaje(tarea, robotJefe)
+      si(tarea <> 4)
+        RecibirMensaje(av, robotJefe)
+        RecibirMensaje(ca, robotJefe)
+        realizarTareas(tarea, av, ca, continuar)
+        EnviarMensaje(V, robotJefe)
+      sino
+        continuar:=F
+  fin
+variables
+  robotJefe: jefe
+  robot1: trabajador
+  robot2: trabajador
+comenzar
+  AsignarArea(robotJefe, AreaJefe)
+  AsignarArea(robot1, AreaInicio)
+  AsignarArea(robot2, AreaInicio)
+  AsignarArea(robot1, AreaCuadrante)
+  AsignarArea(robot2, AreaCuadrante)
+  Iniciar(robotJefe, 1, 1)
+  Iniciar(robot1, 2, 1)
+  Iniciar(robot2, 3, 1)
+fin
+
+{El programa puede quedar bloqueado si a ningun robot le toca la tarea 4}
+{Estos no finalizarian nunca. Para evitarlo, se puede forzar la detencion}
+{luego de las 10 repeticiones del robot jefe. Pero para asegurar un buen}
+{funcionamiento, no deberia considerarse la tarea 4 en las 10 repeticiones}
+{ya que entonces al finalizar las mismas estaria intentando forzar la}
+{detencion de un robot que ya no esta operativo.}

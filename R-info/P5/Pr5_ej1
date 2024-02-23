@@ -1,0 +1,138 @@
+programa Pr5_ej1
+procesos
+  proceso juntarFlores(ES cantF:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF + 1
+  fin
+  proceso juntarPapeles(ES cantP:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      cantP:= cantP + 1
+  fin
+  proceso movimientoBloqueandoRojo(ES cantF:numero)
+  comenzar
+    juntarFlores(cantF)
+    BloquearEsquina(PosAv, PosCa + 1)
+    mover
+    juntarFlores(cantF)
+    BloquearEsquina(PosAv, PosCa + 1)
+    mover
+    LiberarEsquina(PosAv, PosCa - 1)
+    juntarFlores(cantF)
+    mover
+    LiberarEsquina(PosAv, PosCa - 1)
+    juntarFlores(cantF)
+  fin
+  proceso movimientoBloqueandoAzul(ES cantP:numero)
+  comenzar
+    juntarPapeles(cantP)
+    BloquearEsquina(PosAv + 1, PosCa)
+    mover
+    juntarPapeles(cantP)
+    BloquearEsquina(PosAv + 1, PosCa)
+    mover
+    LiberarEsquina(PosAv - 1, PosCa)
+    juntarPapeles(cantP)
+    mover
+    LiberarEsquina(PosAv - 1, PosCa)
+  fin
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robotR1)
+    EnviarMensaje(2, robotR2)
+    EnviarMensaje(3, robotA1)
+    EnviarMensaje(4, robotA2)
+  fin
+  proceso recibirCantidades(E id:numero; ES cantF:numero; ES cantP:numero)
+  variables
+    cantRecibida:numero
+  comenzar
+    si(id=1)
+      RecibirMensaje(cantRecibida, robotR1)
+      cantF:= cantF + cantRecibida
+    sino
+      si(id=2)
+        RecibirMensaje(cantRecibida, robotR2)
+        cantF:= cantF + cantRecibida
+      sino
+        si(id=3)
+          RecibirMensaje(cantRecibida, robotA1)
+          cantP:= cantP + cantRecibida
+        sino
+          RecibirMensaje(cantRecibida, robotA2)
+          cantP:= cantP + cantRecibida
+  fin
+areas
+  AreaFiscalizador: AreaP(1, 1, 1, 1)
+  Area1: AreaPC(2, 1, 3, 97)
+  Area2: AreaPC(1, 98, 100, 100)
+robots
+  robot fiscalizador
+  variables
+    cantF, cantP, quien:numero
+  comenzar
+    cantF:=0
+    cantP:=0
+    identificarRobots
+    repetir 4
+      RecibirMensaje(quien, *)
+      recibirCantidades(quien, cantF, cantP)
+    si(cantF > cantP)
+      Informar('Ganador_equipo',1)
+    sino
+      si(cantP > cantF)
+        Informar('Ganador_equipo',2)
+      sino
+        Informar('Empate',0)
+  fin
+  robot rojo
+  variables
+    quienSoy, cantF:numero
+  comenzar
+    RecibirMensaje(quienSoy, robotFiscalizador)
+    repetir 96
+      juntarFlores(cantF)
+      mover
+    movimientoBloqueandoRojo(cantF)
+    
+    EnviarMensaje(quienSoy, robotFiscalizador)
+    EnviarMensaje(cantF, robotFiscalizador)
+  fin
+  robot azul
+  variables
+    quienSoy, cantP:numero
+  comenzar
+    RecibirMensaje(quienSoy, robotFiscalizador)
+    derecha
+    movimientoBloqueandoAzul(cantP)
+    repetir 96
+      juntarPapeles(cantP)
+      mover
+    juntarPapeles(cantP)
+    
+    EnviarMensaje(quienSoy, robotFiscalizador)
+    EnviarMensaje(cantP, robotFiscalizador)
+  fin
+variables
+  robotFiscalizador: fiscalizador
+  robotR1: rojo
+  robotR2: rojo
+  robotA1: azul
+  robotA2: azul
+comenzar
+  AsignarArea(robotFiscalizador, AreaFiscalizador)
+  AsignarArea(robotR1, Area1)
+  AsignarArea(robotR1, Area2)
+  AsignarArea(robotR2, Area1)
+  AsignarArea(robotR2, Area2)
+  AsignarArea(robotA1, Area2)
+  AsignarArea(robotA2, Area2)
+  Iniciar(robotFiscalizador, 1, 1)
+  Iniciar(robotR1, 2, 1)
+  Iniciar(robotR2, 3, 1)
+  Iniciar(robotA1, 1, 98)
+  Iniciar(robotA2, 1, 99)
+fin

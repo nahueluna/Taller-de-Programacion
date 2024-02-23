@@ -1,0 +1,126 @@
+programa parcial1
+procesos
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+  fin
+  proceso enviarConfirmacionSeguir
+  comenzar
+    EnviarMensaje(V, robot1)
+    EnviarMensaje(V, robot2)
+    EnviarMensaje(V, robot3)
+  fin
+  proceso recibirFlores(E quien:numero; ES cantF:numero)
+  comenzar
+    si(quien=1)
+      RecibirMensaje(cantF, robot1)
+    sino
+      si(quien=2)
+        RecibirMensaje(cantF, robot2)
+      sino
+        RecibirMensaje(cantF, robot3)
+  fin
+  proceso maximo(E quien:numero; E cantF:numero; ES maxR:numero; ES maxF:numero)
+  comenzar
+    si(cantF > maxF)
+      maxF:= cantF
+      maxR:= quien
+  fin
+  proceso juntarFlores(ES cantF:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF + 1
+  fin
+  proceso hacerLado(E lado:numero; ES cantF:numero)
+  comenzar
+    repetir lado
+      juntarFlores(cantF)
+      mover
+    derecha
+  fin
+  proceso depositarEnEsquina
+  variables
+    avAct:numero
+  comenzar
+    avAct:=PosAv
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    depositarFlor
+    Pos(avAct, 1)
+    LiberarEsquina(10, 10)
+  fin
+areas
+  AreaCoordinador: AreaP(20, 1, 20, 1)
+  Area1: AreaP(1, 1, 6, 6)
+  Area2: AreaP(7, 1, 12, 6)
+  Area3: AreaP(13, 1, 18, 6)
+  AreaDeposito: AreaPC(10, 10, 10, 10)
+robots
+  robot coordinador
+  variables
+    quien, cantF, maxR, maxF:numero
+    continuar:boolean
+  comenzar
+    maxR:=0
+    maxF:=-1
+    identificarRobots
+    repetir 4
+      RecibirMensaje(continuar, *)  {con un repetir funciona mal}
+      RecibirMensaje(continuar, *)
+      RecibirMensaje(continuar, *)
+      enviarConfirmacionSeguir
+    
+    repetir 3
+      RecibirMensaje(quien, *)
+      recibirFlores(quien, cantF)
+      maximo(quien, cantF, maxR, maxF)
+    
+    EnviarMensaje(maxR, robot1)
+    EnviarMensaje(maxR, robot2)
+    EnviarMensaje(maxR, robot3)
+    
+    Informar('Ganador',maxR)
+    Informar('Flores',maxF)
+  fin
+  robot trabajador
+  variables
+    quienSoy, cantF, ganador:numero
+    continuar:boolean
+  comenzar
+    cantF:= 0
+    RecibirMensaje(quienSoy, robotCoordinador)
+    repetir 4
+      hacerLado(5, cantF)
+      EnviarMensaje(V, robotCoordinador)
+      RecibirMensaje(continuar, robotCoordinador)
+    
+    EnviarMensaje(quienSoy, robotCoordinador)
+    EnviarMensaje(cantF, robotCoordinador)
+    
+    RecibirMensaje(ganador, robotCoordinador)
+    
+    si(ganador <> quienSoy)
+      repetir cantF
+        depositarEnEsquina
+  fin
+variables
+  robotCoordinador: coordinador
+  robot1: trabajador
+  robot2: trabajador
+  robot3: trabajador
+comenzar
+  AsignarArea(robotCoordinador, AreaCoordinador)
+  AsignarArea(robot1, Area1)
+  AsignarArea(robot1, AreaDeposito)
+  AsignarArea(robot2, Area2)
+  AsignarArea(robot2, AreaDeposito)
+  AsignarArea(robot3, Area3)
+  AsignarArea(robot3, AreaDeposito)
+  Iniciar(robotCoordinador, 20, 1)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 7, 1)
+  Iniciar(robot3, 13, 1)
+fin

@@ -1,0 +1,84 @@
+programa ej1
+procesos
+  proceso juntar(ES flor:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flor:=flor+1
+  fin
+  proceso recorrerAv(ES flor:numero)
+  comenzar
+    juntar(flor)
+    repetir 9
+      mover
+      juntar(flor)
+  fin
+  proceso maximo(ES max:numero;E flor:numero)
+  comenzar
+    si(flor>max)
+      max:=flor
+  fin
+areas
+  areaA : AreaP(1,1,1,10)
+  areaB : AreaP(2,11,2,20)
+  areaC : AreaP(3,21,3,30)
+  areaD : AreaP(4,31,4,40)
+  areaE : AreaP(5,41,5,50)
+  areaF : AreaP(6,51,6,60)
+  areaG : AreaP(2,1,2,1)
+robots
+  robot jefe
+  variables
+    flor:numero
+    max:numero
+  comenzar
+    max:=-1
+    repetir 6
+      RecibirMensaje(flor, *)
+      maximo(max,flor)
+    Informar(max)
+  fin
+  robot juntador
+  variables
+    flor:numero
+  comenzar
+    flor:=0
+    recorrerAv(flor)
+    EnviarMensaje(flor,robotJefe)
+  fin
+variables
+  robot1:juntador
+  robot2:juntador
+  robot3:juntador
+  robot4:juntador
+  robot5:juntador
+  robot6:juntador
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1, areaA)
+  AsignarArea(robot2, areaB)
+  AsignarArea(robot3, areaC)
+  AsignarArea(robot4, areaD)
+  AsignarArea(robot5, areaE)
+  AsignarArea(robot6, areaF)
+  AsignarArea(robotJefe, areaG)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 2, 11)
+  Iniciar(robot3, 3, 21)
+  Iniciar(robot4, 4, 31)
+  Iniciar(robot5, 5, 41)
+  Iniciar(robot6, 6, 51)
+  Iniciar(robotJefe, 2, 1)
+fin
+
+{Sin robot fiscalizador, serán los propios robots que compiten los que}
+{deban informar el máximo. Para eso, cada uno puede mandar su cantidad}
+{de flores a todos los demas (debido a que es un mismo código para todos}
+{deberán enviarse mensaje a si mismos tambien). Luego, cada uno recibirá}
+{las flores de todos y, con un repetir 6, irá comparando cual es la}
+{máxima. Adicionalmente, agrego una comprobación para que la cantidad}
+{máxima solo sea informada por el robot que la juntó.}
+{Esta solución no es muy eficiente debido a que cada robot envía y recibe}
+{6 mensajes y compara sobre las mismas variables (inevitable ya que}
+{comparten código por ser del mismo tipo). Es más eficiente tener un}
+{robot fiscalizador que calcule el máximo por todos una única vez.}

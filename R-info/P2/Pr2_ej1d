@@ -1,0 +1,111 @@
+programa ej1
+procesos
+  proceso atenderPedido(ES quien:numero; ES flor: numero)
+  comenzar
+    RecibirMensaje(quien, *)
+    recibirFlores(quien, flor)
+  fin
+  proceso recibirFlores(E quien:numero; ES flor:numero)
+  comenzar
+    si(quien=1)
+      RecibirMensaje(flor, robot1)
+    sino
+      si(quien=2)
+        RecibirMensaje(flor, robot2)
+      sino
+        si(quien=3)
+          RecibirMensaje(flor, robot3)
+        sino
+          si(quien=4)
+            RecibirMensaje(flor, robot4)
+          sino
+            si(quien=5)
+              RecibirMensaje(flor, robot5)
+            sino
+              RecibirMensaje(flor, robot6)       
+  fin
+  proceso juntar(ES flor:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flor:=flor+1
+  fin
+  proceso recorrerAv(ES flor:numero)
+  comenzar
+    juntar(flor)
+    repetir 9
+      mover
+      juntar(flor)
+  fin
+  proceso maximo(ES max:numero; ES maxR:numero ;E flor:numero; E quien:numero)
+  comenzar
+    si(flor>max)
+      max:=flor
+      maxR:=quien
+  fin
+areas
+  areaA : AreaP(1,1,1,10)
+  areaB : AreaP(2,11,2,20)
+  areaC : AreaP(3,21,3,30)
+  areaD : AreaP(4,31,4,40)
+  areaE : AreaP(5,41,5,50)
+  areaF : AreaP(6,51,6,60)
+  areaG : AreaP(2,1,2,1)
+robots
+  robot jefe
+  variables
+    flor:numero
+    quien:numero
+    maxF:numero
+    maxR:numero
+  comenzar
+    maxF:=-1
+    maxR:=0
+    
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+    EnviarMensaje(5, robot5)
+    EnviarMensaje(6, robot6)
+    
+    repetir 6
+      atenderPedido(quien, flor)
+      maximo(maxF,maxR,flor,quien)
+    Informar('r_max',maxR)
+    Informar('flor_max',maxF)
+  fin
+  robot juntador
+  variables
+    flor, identidad:numero
+  comenzar
+    flor:=0
+    RecibirMensaje(identidad, robotJefe)
+    recorrerAv(flor)
+    EnviarMensaje(identidad, robotJefe)
+    EnviarMensaje(flor,robotJefe)
+  fin
+variables
+  robot1:juntador
+  robot2:juntador
+  robot3:juntador
+  robot4:juntador
+  robot5:juntador
+  robot6:juntador
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1, areaA)
+  AsignarArea(robot2, areaB)
+  AsignarArea(robot3, areaC)
+  AsignarArea(robot4, areaD)
+  AsignarArea(robot5, areaE)
+  AsignarArea(robot6, areaF)
+  AsignarArea(robotJefe, areaG)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 2, 11)
+  Iniciar(robot3, 3, 21)
+  Iniciar(robot4, 4, 31)
+  Iniciar(robot5, 5, 41)
+  Iniciar(robot6, 6, 51)
+  Iniciar(robotJefe, 2, 1)
+fin

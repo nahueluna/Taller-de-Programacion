@@ -1,0 +1,109 @@
+programa Pr5_ej4
+procesos
+  proceso juntarFlor(ES flor:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flor:= flor + 1
+  fin
+  proceso juntarFloresEnEsquina(ES flor:numero; E av:numero; E ca:numero)
+  variables
+    avAct, caAct:numero
+  comenzar
+    avAct:=PosAv
+    caAct:=PosCa
+    BloquearEsquina(av, ca)
+    Pos(av, ca)
+    juntarFlor(flor)
+    Pos(avAct, caAct)
+    LiberarEsquina(av, ca)
+  fin
+  proceso depositarFloresEnEsquina(E cantF:numero)
+  variables
+    avAct, caAct:numero
+  comenzar
+    avAct:=PosAv
+    caAct:=PosCa
+    repetir cantF
+      BloquearEsquina(10, 10)
+      Pos(10, 10)
+      depositarFlor
+      Pos(avAct, caAct)
+      LiberarEsquina(10, 10)
+  fin
+  proceso elegirRobot(E quien:numero; E av:numero; E ca:numero)
+  comenzar
+    si(quien=1)
+      EnviarMensaje(V, robot1)
+      EnviarMensaje(av, robot1)
+      EnviarMensaje(ca, robot1)
+    sino
+      si(quien=2)
+        EnviarMensaje(V, robot2)
+        EnviarMensaje(av, robot2)
+        EnviarMensaje(ca, robot2)
+      sino
+        EnviarMensaje(V, robot3)
+        EnviarMensaje(av, robot3)
+        EnviarMensaje(ca, robot3)
+  fin
+areas
+  AreaTrabajo: AreaPC(40,40,60,60)
+  AreaInicio: AreaC(1,1,4,1)
+  AreaDeposito: AreaPC(10,10,10,10)
+robots
+  robot florero
+  variables
+    continuar:boolean
+    avenida, calle, flor:numero
+  comenzar
+    flor:=0
+    RecibirMensaje(continuar, robotFiscalizador)
+    mientras(continuar)
+      RecibirMensaje(avenida,robotFiscalizador)
+      RecibirMensaje(calle,robotFiscalizador)
+      juntarFloresEnEsquina(flor,avenida,calle)
+      RecibirMensaje(continuar,robotFiscalizador)
+    depositarFloresEnEsquina(flor)
+    EnviarMensaje(flor, robotFiscalizador)
+  fin
+  robot fiscalizador
+  variables
+    quien, av, ca, cantF, florRecibida:numero
+  comenzar
+    cantF:=0
+    repetir 8
+      Random(quien, 1, 3)
+      Random(av, 40, 60)
+      Random(ca, 40, 60)
+      elegirRobot(quien, av, ca)
+    EnviarMensaje(F, robot1)
+    EnviarMensaje(F, robot2)
+    EnviarMensaje(F, robot3)
+    
+    repetir 3
+      RecibirMensaje(florRecibida, *)
+      cantF:= cantF + florRecibida
+    Informar('totalF',cantF)
+  fin
+variables
+  robot1:florero
+  robot2:florero
+  robot3:florero
+  robotFiscalizador:fiscalizador
+comenzar
+  AsignarArea(robot1,AreaTrabajo)
+  AsignarArea(robot1,AreaInicio)
+  AsignarArea(robot1,AreaDeposito)
+  AsignarArea(robot2,AreaTrabajo)
+  AsignarArea(robot2,AreaInicio)
+  AsignarArea(robot2,AreaDeposito)
+  AsignarArea(robot3,AreaTrabajo)
+  AsignarArea(robot3,AreaInicio)
+  AsignarArea(robot3,AreaDeposito)
+  AsignarArea(robotFiscalizador,AreaInicio)
+  Iniciar(robot1,1,1)
+  Iniciar(robot2,2,1)
+  Iniciar(robot3,3,1)
+  Iniciar(robotFiscalizador,4,1)
+fin

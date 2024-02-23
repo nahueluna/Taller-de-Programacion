@@ -1,0 +1,157 @@
+programa Pr2_ej4
+procesos
+  proceso indicarGanador(E rob:numero)
+  comenzar
+    EnviarMensaje(rob, robot1)
+    EnviarMensaje(rob, robot2)
+    EnviarMensaje(rob, robot3)
+    EnviarMensaje(rob, robot4)
+  fin
+  proceso recibirElementos(E id:numero; ES cantElem:numero)
+  comenzar
+    si(id = 1)
+      RecibirMensaje(cantElem, robot1)
+    sino
+      si(id = 2)
+        RecibirMensaje(cantElem, robot2)
+      sino
+        si(id = 3)
+          RecibirMensaje(cantElem, robot3)
+        sino
+          RecibirMensaje(cantElem, robot4)
+  fin
+  proceso maximo(E cantElem: numero; E id:numero; ES maxElem:numero; ES maxRob:numero)
+  comenzar
+    si(cantElem > maxElem)
+      maxElem:=cantElem
+      maxRob:=id
+  fin
+  proceso evaluarElementos(ES maxElem:numero; ES maxRob:numero)
+  variables
+    cantElem, identidad:numero
+  comenzar
+    repetir 4
+      RecibirMensaje(identidad, *)
+      recibirElementos(identidad, cantElem)
+      maximo(cantElem, identidad, maxElem, maxRob)
+  fin
+  proceso elegirRobot(E quien:numero)
+  variables
+    termine:boolean
+  comenzar
+    si(quien = 1)
+      EnviarMensaje(V, robot1)
+      RecibirMensaje(termine, robot1)
+    sino
+      si(quien = 2)
+        EnviarMensaje(V, robot2)
+        RecibirMensaje(termine, robot2)
+      sino
+        si(quien = 3)
+          EnviarMensaje(V, robot3)
+          RecibirMensaje(termine, robot3)
+        sino
+          EnviarMensaje(V, robot4)
+          RecibirMensaje(termine, robot4)
+  fin
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+  fin
+  proceso ubicarRobot
+  variables
+    Av, Ca:numero
+  comenzar
+    Random(Av, 25, 75)
+    Random(Ca, 25, 75)
+    Pos(Av, Ca)
+  fin
+  proceso juntar(ES cantElem:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      cantElem:= cantElem + 1
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantElem:= cantElem + 1
+  fin
+  proceso terminarRobots
+  comenzar
+    EnviarMensaje(F, robot1)
+    EnviarMensaje(F, robot2)
+    EnviarMensaje(F, robot3)
+    EnviarMensaje(F, robot4)
+  fin
+areas
+  AreaInicio: AreaC(1, 1, 40, 1)
+  AreaRecoleccion: AreaPC(25, 25, 75, 75)
+robots
+  robot jefe
+  variables
+    quien, maxElem, maxRob:numero
+  comenzar
+    maxElem:=-1
+    maxRob:=0
+    
+    identificarRobots
+    
+    repetir 10
+      Random(quien, 1, 4)
+      elegirRobot(quien)
+      
+    terminarRobots
+    
+    evaluarElementos(maxElem, maxRob)
+    indicarGanador(maxRob)
+  fin
+  robot recolector
+  variables
+    id, confirmacion, cantElem, iniAv, iniCa:numero
+    continuar:boolean
+  comenzar
+    iniAv:=PosAv
+    iniCa:=PosCa
+    cantElem:=0
+    
+    RecibirMensaje(id, robotJefe)
+    RecibirMensaje(continuar, robotJefe)
+    
+    mientras(continuar)
+      ubicarRobot
+      juntar(cantElem)
+      Pos(iniAv, iniCa)
+      EnviarMensaje(V, robotJefe)
+      RecibirMensaje(continuar, robotJefe)
+      
+    EnviarMensaje(id, robotJefe)
+    EnviarMensaje(cantElem, robotJefe)
+    
+    RecibirMensaje(confirmacion, robotJefe)
+    si(confirmacion = id)
+      Pos(50, 50)
+  fin
+variables
+  robotJefe: jefe
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
+  robot4: recolector
+comenzar
+  AsignarArea(robotJefe, AreaInicio)
+  AsignarArea(robot1, AreaInicio)
+  AsignarArea(robot1, AreaRecoleccion)
+  AsignarArea(robot2, AreaInicio)
+  AsignarArea(robot2, AreaRecoleccion)
+  AsignarArea(robot3, AreaInicio)
+  AsignarArea(robot3, AreaRecoleccion)
+  AsignarArea(robot4, AreaInicio)
+  AsignarArea(robot4, AreaRecoleccion)
+  Iniciar(robotJefe, 1, 1)
+  Iniciar(robot1, 25, 1)
+  Iniciar(robot2, 30, 1)
+  Iniciar(robot3, 35, 1)
+  Iniciar(robot4, 40, 1)
+fin

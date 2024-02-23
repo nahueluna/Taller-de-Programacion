@@ -1,0 +1,55 @@
+programa Pr1_ej1b
+procesos
+  proceso juntarFlores(ES cantF:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:=cantF + 1
+  fin
+  proceso recorrerAv(ES flores:numero; ES esquinasVacias:numero)
+  comenzar
+    repetir 99
+      si(~HayFlorEnLaEsquina) & (~HayPapelEnLaEsquina)
+        esquinasVacias:=esquinasVacias+1
+      sino
+        juntarFlores(flores)
+      mover
+    si(~HayFlorEnLaEsquina) & (~HayPapelEnLaEsquina)
+      esquinasVacias:=esquinasVacias+1
+    sino
+      juntarFlores(flores)
+  fin
+  proceso dejarFlores(E cantF:numero)
+  comenzar
+    repetir cantF
+      depositarFlor
+  fin
+areas
+  ciudad1:AreaC(1,1,5,100)
+robots
+  robot tipo1
+  variables
+    cantFlores,cantEsquinasVacias:numero
+  comenzar
+    repetir 2
+      cantFlores:=0
+      cantEsquinasVacias:=0
+      recorrerAv(cantFlores, cantEsquinasVacias)
+      dejarFlores(cantFlores)
+      Informar(cantFlores)
+      Informar(cantEsquinasVacias)
+      Pos(PosAv+2,1)
+      
+    cantFlores:=0
+    cantEsquinasVacias:=0
+    recorrerAv(cantFlores, cantEsquinasVacias)
+    dejarFlores(cantFlores)
+    Informar(cantFlores)
+    Informar(cantEsquinasVacias)
+  fin
+variables
+  robot1: tipo1
+comenzar
+  AsignarArea(robot1, ciudad1)
+  Iniciar(robot1, 1, 1)
+fin

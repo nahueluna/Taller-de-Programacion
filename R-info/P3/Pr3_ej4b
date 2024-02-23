@@ -1,0 +1,105 @@
+programa Pr3_ej4b
+procesos
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+  fin
+  proceso recibirFinalizacion(ES ultimo:numero)
+  comenzar
+    RecibirMensaje(ultimo, *)
+    RecibirMensaje(ultimo, *)
+    RecibirMensaje(ultimo, *)
+    RecibirMensaje(ultimo, *)
+  fin
+  proceso dejarFlor(E avIni:numero; E caIni:numero)
+  comenzar
+    BloquearEsquina(11, 11)
+    Pos(11, 11)
+    depositarFlor
+    Pos(avIni, caIni)
+    LiberarEsquina(11, 11)
+  fin
+  proceso operarConFlores(E quienSoy:numero; E avIni:numero; E caIni:numero)
+  variables
+    continuar:boolean
+  comenzar
+    continuar:=V
+    mientras(continuar)
+      BloquearEsquina(10, 10)
+      Pos(10, 10)
+      si(HayFlorEnLaEsquina)
+        tomarFlor
+        Pos(avIni, caIni)
+        LiberarEsquina(10, 10)
+        dejarFlor(avIni, caIni)
+      sino
+        continuar:=F
+        EnviarMensaje(quienSoy, robotJefe)
+        Pos(avIni, caIni)
+        LiberarEsquina(10, 10)
+  fin
+areas
+  AreaRecoleccion: AreaC(10, 10, 11, 11)
+  AreaJefe: AreaP(1, 1, 1, 1)
+  AreaInicio: AreaPC(9, 9, 9, 12)
+robots
+  robot jefe
+  variables
+    ultimo:numero
+  comenzar
+    identificarRobots
+    recibirFinalizacion(ultimo)
+    Informar('Ultimo',ultimo)
+    Pos(11, 11)
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  robot recolector
+  variables
+    quienSoy, avIni, caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    RecibirMensaje(quienSoy, robotJefe)
+    operarConFlores(quienSoy, avIni, caIni)
+  fin
+variables
+  robotJefe: jefe
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
+  robot4: recolector
+comenzar
+  AsignarArea(robotJefe, AreaJefe)
+  AsignarArea(robotJefe, AreaRecoleccion)
+  AsignarArea(robot1, AreaInicio)
+  AsignarArea(robot1, AreaRecoleccion)
+  AsignarArea(robot2, AreaInicio)
+  AsignarArea(robot2, AreaRecoleccion)
+  AsignarArea(robot3, AreaInicio)
+  AsignarArea(robot3, AreaRecoleccion)
+  AsignarArea(robot4, AreaInicio)
+  AsignarArea(robot4, AreaRecoleccion)
+  Iniciar(robotJefe, 1, 1)
+  Iniciar(robot1, 9, 9)
+  Iniciar(robot2, 9, 10)
+  Iniciar(robot3, 9, 11)
+  Iniciar(robot4, 9, 12)
+fin
+
+{La opcion 2 maximiza la concurrencia, ya que, al alternar posiciones,}
+{permite que los robots roten sus tareas. Asi, mientras uno ya juntó}
+{flores, hay otros dos en el área (uno tomando y el otro depositando)}
+{Hay mayor concurrencia porque los robots no realizan la tarea de forma}
+{secuencial (tomar, depositar, volver), sino que realizan una tarea,}
+{vuelven y, aunque depende del SO, es probable que otro robot ingrese al}
+{área para realizar otra. Hay más robots realizando tareas al mismo tiempo}
+
+{Que los robots no vuelvan a su esquina implicaría volver a la primera}
+{solución. Para evitar que vuelvan pero maximizar la concurrencia se}
+{debería aumentar la cantidad de robots operando de forma simultánea.}
+{Por lo tanto, se deberían agregar más esquinas a las que los robots
+{accedan para trabajar.}

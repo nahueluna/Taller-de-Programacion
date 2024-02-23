@@ -1,0 +1,87 @@
+programa Pr2_ej1
+procesos
+  proceso juntarP(ES p:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+  proceso juntarF(ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+  fin
+  proceso izquierda
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso juntar(ES cantF:numero; ES cantP:numero)
+  comenzar
+    juntarF(cantF)
+    juntarP(cantP)
+  fin
+  proceso hacerEscalon(E ancho:numero; E alto:numero; ES cantF:numero; ES cantP:numero)
+  comenzar
+    repetir alto
+      juntar(cantF, cantP)
+      mover
+    derecha
+    repetir ancho
+      juntar(cantF, cantP)
+      mover
+    juntar(cantF, cantP)   
+  fin
+  proceso realizarEscalon(E ancho:numero; E alto:numero; ES cantEsc:numero)
+  variables
+    cantF, cantP:numero
+  comenzar
+    cantF:=0
+    cantP:=0
+    hacerEscalon(ancho, alto, cantF, cantP)
+    izquierda
+    si(cantF>cantP)
+      cantEsc:= cantEsc + 1
+  fin
+areas
+  Area: AreaC(1, 1, 16, 21)
+robots
+  robot jefe
+  variables
+    totalEscalones:numero
+    sumaEsc:numero
+  comenzar
+    totalEscalones:=0  
+    repetir 3
+      RecibirMensaje(sumaEsc, *)
+      totalEscalones:= totalEscalones + sumaEsc
+    Informar('total_Escalones',totalEscalones)
+  fin
+  robot escalador
+  variables
+    ancho, alto:numero
+    cantEscal:numero
+  comenzar
+    cantEscal:=0
+    ancho:=1
+    repetir 4
+      Random(alto, 1, 5)
+      realizarEscalon(ancho, alto, cantEscal)
+    EnviarMensaje(cantEscal, robotJefe)
+  fin
+variables
+  robotJefe:jefe
+  robot1:escalador
+  robot2:escalador
+  robot3:escalador
+comenzar
+  AsignarArea(robotJefe, Area)
+  AsignarArea(robot1, Area)
+  AsignarArea(robot2, Area)
+  AsignarArea(robot3, Area)
+  Iniciar(robotJefe, 1, 1)
+  Iniciar(robot1, 2, 1)
+  Iniciar(robot2, 7, 1)
+  Iniciar(robot3, 12, 1)
+fin

@@ -1,0 +1,93 @@
+programa Pr5_ej3
+procesos
+  proceso dejarFlores
+  comenzar
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+  fin
+  proceso depositarFlorEnEsquina
+  variables
+    avAct, caAct:numero
+  comenzar
+    avAct:= PosAv
+    caAct:= PosCa
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    dejarFlores
+    Pos(avAct, caAct)
+    LiberarEsquina(10, 10)
+  fin
+  proceso juntarFlorEnEsquina(ES flor:numero)
+  comenzar
+    BloquearEsquina(10, 10)
+    Pos(10, 10)
+    juntarFlor(flor)
+    Pos(1, 5)
+    LiberarEsquina(10, 10)
+  fin
+  proceso juntarFlor(ES flor:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flor:=flor + 1
+  fin
+areas
+  AreaDeposito: AreaC(10,10,10,10)
+  Area1: AreaP(1,3,100,3)
+  Area2: AreaP(1,4,100,4)
+  AreaCosechador: AreaP(1,5,1,5)
+robots
+  robot juntador
+  variables
+    flor:numero
+    mov:numero
+  comenzar
+    derecha
+    mientras(PosAv < 100)
+      flor:=0
+      mov:=0
+      mientras(PosAv < 100) & ((flor < 10) & (mov < 5))
+        juntarFlor(flor)
+        mover
+        mov:= mov + 1
+      depositarFlorEnEsquina
+      EnviarMensaje(V, robotCosechador)
+    
+    juntarFlor(flor)
+    si(flor = 10)
+      depositarFlorEnEsquina
+      EnviarMensaje(V, robotCosechador)
+    EnviarMensaje(F, robotCosechador)
+  fin
+  robot cosechador
+  variables
+    contador:numero
+    flor:numero
+    continuar:boolean
+  comenzar
+    contador:=0
+    flor:=0
+    mientras(contador < 2)
+      RecibirMensaje(continuar, *)
+      si ~(continuar)
+        contador:= contador + 1
+      sino
+        juntarFlorEnEsquina(flor)
+    
+    Informar('CantF',flor)
+  fin
+variables
+  robot1: juntador
+  robot2: juntador
+  robotCosechador: cosechador
+comenzar
+  AsignarArea(robot1, AreaDeposito)
+  AsignarArea(robot1, Area1)
+  AsignarArea(robot2, AreaDeposito)
+  AsignarArea(robot2, Area2)
+  AsignarArea(robotCosechador, AreaDeposito)
+  AsignarArea(robotCosechador, AreaCosechador)
+  Iniciar(robot1, 1,3)
+  Iniciar(robot2, 1,4)
+  Iniciar(robotCosechador, 1,5)
+fin

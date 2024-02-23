@@ -1,0 +1,164 @@
+programa parcial3
+procesos
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+  fin
+  proceso determinarGanador(E quien:numero; ES contador:numero)
+  comenzar
+    si(quien=1) | (quien=2)
+      contador:= contador + 1
+  fin
+  proceso juntarFlorEnEsquina
+  variables
+    avAct, caAct:numero
+  comenzar
+    avAct:=PosAv
+    caAct:=PosCa
+    BloquearEsquina(15, 15)
+    Pos(15, 15)
+    tomarFlor
+    Pos(avAct, caAct)
+    LiberarEsquina(15, 15)
+  fin
+  proceso juntarPapelEnEsquina
+  variables
+    avAct, caAct:numero
+  comenzar
+    avAct:=PosAv
+    caAct:=PosCa
+    BloquearEsquina(15, 15)
+    Pos(15, 15)
+    tomarPapel
+    Pos(avAct, caAct)
+    LiberarEsquina(15, 15)
+  fin
+  proceso ubicarse(E quien:numero)
+  comenzar
+    si(quien = 1)
+      BloquearEsquina(5, 4)
+      Pos(5,4)
+      depositarFlor
+      derecha
+      mover
+      LiberarEsquina(5, 4)
+    sino
+      si(quien = 2)
+        BloquearEsquina(5, 4)
+        Pos(5, 4)
+        depositarPapel
+        mover
+        LiberarEsquina(5, 4)
+      sino
+        si(quien = 3)
+          BloquearEsquina(11, 4)
+          Pos(11, 4)
+          depositarFlor
+          derecha
+          mover
+          LiberarEsquina(11, 4)
+        sino
+          BloquearEsquina(11, 4)
+          Pos(11, 4)
+          depositarPapel
+          mover
+          LiberarEsquina(11, 4)
+  fin
+  proceso hacerLadoHorizontal
+  comenzar
+    repetir 3
+      depositarFlor
+      mover
+    depositarFlor
+  fin
+  proceso hacerLadoVertical
+  comenzar
+    repetir 10
+      depositarPapel
+      mover
+    depositarPapel
+  fin
+areas
+  AreaFiscalizador: AreaP(1, 1, 1, 1)
+  AreaInicio: AreaPC(50, 50, 53, 53)
+  Area1: AreaPC(6, 4, 9, 4)
+  Area2: AreaPC(5, 4, 5, 15)
+  Area3: AreaPC(12, 4, 15, 4)
+  Area4: AreaPC(11, 4, 11, 15)
+  AreaRecoleccion: AreaPC(15, 15, 15, 15)
+robots
+  robot fiscalizador
+  variables
+    quien, equipo1:numero
+  comenzar
+    equipo1:=0
+    identificarRobots
+    
+    repetir 3
+      RecibirMensaje(quien, *)
+      determinarGanador(quien, equipo1)
+      
+    RecibirMensaje(quien, *)
+    
+    si(equipo1 = 2)
+      Informar('Ganador',1)
+    sino
+      Informar('Ganador',2)
+  fin
+  robot horizontal
+  variables
+    quienSoy:numero
+  comenzar
+    RecibirMensaje(quienSoy, robotFiscalizador)
+    repetir 5
+      juntarFlorEnEsquina
+      
+    ubicarse(quienSoy)
+    hacerLadoHorizontal
+    
+    EnviarMensaje(quienSoy, robotFiscalizador)
+  fin
+  robot vertical
+  variables
+    quienSoy:numero
+  comenzar
+    RecibirMensaje(quienSoy, robotFiscalizador)
+    repetir 12
+      juntarPapelEnEsquina
+      
+    ubicarse(quienSoy)
+    hacerLadoVertical
+    
+    EnviarMensaje(quienSoy, robotFiscalizador)
+  fin
+variables
+  robotFiscalizador: fiscalizador
+  robot1: horizontal
+  robot2: vertical
+  robot3: horizontal
+  robot4: vertical
+comenzar
+  AsignarArea(robotFiscalizador, AreaFiscalizador)
+  AsignarArea(robot1, AreaInicio)
+  AsignarArea(robot1, Area1)
+  AsignarArea(robot1, Area2)
+  AsignarArea(robot1, AreaRecoleccion)
+  AsignarArea(robot2, AreaInicio)
+  AsignarArea(robot2, Area2)
+  AsignarArea(robot2, AreaRecoleccion)
+  AsignarArea(robot3, AreaInicio)
+  AsignarArea(robot3, Area3)
+  AsignarArea(robot3, Area4)
+  AsignarArea(robot3, AreaRecoleccion)
+  AsignarArea(robot4, AreaInicio)
+  AsignarArea(robot4, Area4)
+  AsignarArea(robot4, AreaRecoleccion)
+  Iniciar(robotFiscalizador, 1, 1)
+  Iniciar(robot1, 50, 50)
+  Iniciar(robot2, 51, 51)
+  Iniciar(robot3, 52, 52)
+  Iniciar(robot4, 53, 53)
+fin

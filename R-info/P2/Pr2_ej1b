@@ -1,0 +1,52 @@
+programa ej1
+procesos
+  proceso juntar(ES flor:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      flor:=flor+1
+  fin
+  proceso recorrerAv(ES flor:numero)
+  comenzar
+    juntar(flor)
+    repetir 9
+      mover
+      juntar(flor)
+  fin
+areas
+  areaA : AreaP(1,1,1,10)
+  areaB : AreaP(2,11,2,20)
+  areaC : AreaP(2,1,2,1)
+robots
+  robot jefe
+  variables
+    florA:numero
+    florB:numero
+  comenzar
+    RecibirMensaje(florA, *)
+    RecibirMensaje(florB, *)
+    si(florA>florB)
+      Informar(florA - florB)
+    sino
+      Informar(florB - florA)
+  fin
+  robot juntador
+  variables
+    flor:numero
+  comenzar
+    flor:=0
+    recorrerAv(flor)
+    EnviarMensaje(flor,robot3)
+  fin
+variables
+  robot1:juntador
+  robot2:juntador
+  robot3:jefe
+comenzar
+  AsignarArea(robot1, areaA)
+  AsignarArea(robot2, areaB)
+  AsignarArea(robot3, areaC)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 2, 11)
+  Iniciar(robot3, 2, 1)
+fin

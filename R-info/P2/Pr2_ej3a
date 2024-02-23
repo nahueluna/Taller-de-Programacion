@@ -1,0 +1,75 @@
+programa Pr2_ej3a
+procesos
+  proceso juntarPapel(ES p:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+  proceso juntarFlor(ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+  fin
+  proceso realizarCaFlor(ES cantF:numero)
+  comenzar
+    derecha
+    repetir 9
+      juntarFlor(cantF)
+      mover
+    juntarFlor(cantF)
+  fin
+  proceso realizarCaPapel(ES cantP:numero)
+  comenzar
+    derecha
+    repetir 9
+      juntarPapel(cantP)
+      mover
+    juntarPapel(cantP)
+  fin
+areas
+  AreaA: AreaPC(1, 1, 20, 1)
+  AreaB: AreaPC(1, 5, 20, 5)
+robots
+  robot equipoA
+  variables
+    cantP:numero
+  comenzar
+    cantP:=0
+    si(PosAv = 1)
+      realizarCaPapel(cantP)
+      EnviarMensaje(cantP, robotA2)
+    sino
+      RecibirMensaje(cantP, robotA1)
+      realizarCaPapel(cantP)
+      Informar('cant_papeles', cantP)
+  fin
+  robot equipoB
+  variables
+    cantF:numero
+  comenzar
+    cantF:=0
+    si(PosAv = 1)
+      realizarCaFlor(cantF)
+      EnviarMensaje(cantF, robotB2)
+    sino
+      RecibirMensaje(cantF, robotB1)
+      realizarCaFlor(cantF)
+      Informar('cant_flores', cantF)
+  fin
+variables
+  robotA1: equipoA
+  robotA2: equipoA
+  robotB1: equipoB
+  robotB2: equipoB
+comenzar
+  AsignarArea(robotA1, AreaA)
+  AsignarArea(robotA2, AreaA)
+  AsignarArea(robotB1, AreaB)
+  AsignarArea(robotB2, AreaB)
+  Iniciar(robotA1, 1, 1)
+  Iniciar(robotA2, 11, 1)
+  Iniciar(robotB1, 1, 5)
+  Iniciar(robotB2, 11, 5)
+fin

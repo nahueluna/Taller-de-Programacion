@@ -1,0 +1,87 @@
+programa Pr5_ej5
+procesos
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+  fin
+  proceso depositarPapelEnEsquina(E cantP:numero)
+  comenzar
+    BloquearEsquina(100, 1)
+    Pos(100, 1)
+    repetir cantP
+      depositarPapel
+    Pos(13, 1)
+    LiberarEsquina(100, 1)
+  fin
+  proceso enviarCantidadPapeles(E quien:numero; E cantP:numero)
+  comenzar
+    si(quien=1)
+      EnviarMensaje(cantP, robot1)
+    sino
+      si(quien=2)
+        EnviarMensaje(cantP, robot2)
+      sino
+        EnviarMensaje(cantP, robot3)
+  fin
+  proceso juntarPapelEsquina(E avAct:numero)
+  comenzar
+    BloquearEsquina(100, 1)
+    Pos(100, 1)
+    tomarPapel
+    Pos(avAct, 1)
+    LiberarEsquina(100, 1)
+  fin
+areas
+  Area1: AreaP(10, 1, 10, 1)
+  Area2: AreaP(11, 1, 11, 1)
+  Area3: AreaP(12, 1, 12, 1)
+  AreaServidor: AreaP(13, 1, 13, 1)
+  AreaPapeles: AreaC(100, 1, 100, 1)
+robots
+  robot servidor
+  variables
+    quien, cantP:numero
+    continuar:boolean
+  comenzar
+    identificarRobots
+    repetir 12
+      RecibirMensaje(quien, *)
+      Random(cantP, 1, 5)
+      Informar('cantP',cantP)
+      depositarPapelEnEsquina(cantP)
+      enviarCantidadPapeles(quien, cantP)
+  fin
+  robot cliente
+  variables
+    quienSoy, cantP, avAct:numero
+  comenzar
+    avAct:=PosAv
+    RecibirMensaje(quienSoy, robotServidor)
+    repetir 4
+      EnviarMensaje(quienSoy, robotServidor)
+      RecibirMensaje(cantP, robotServidor)
+      repetir cantP
+        juntarPapelEsquina(avAct)
+        depositarPapel
+  fin
+variables
+  robotServidor: servidor
+  robot1: cliente
+  robot2: cliente
+  robot3: cliente
+comenzar
+  AsignarArea(robotServidor, AreaServidor)
+  AsignarArea(robotServidor, AreaPapeles)
+  AsignarArea(robot1, Area1)
+  AsignarArea(robot1, AreaPapeles)
+  AsignarArea(robot2, Area2)
+  AsignarArea(robot2, AreaPapeles)
+  AsignarArea(robot3, Area3)
+  AsignarArea(robot3, AreaPapeles)
+  Iniciar(robotServidor, 13, 1)
+  Iniciar(robot1, 10, 1)
+  Iniciar(robot2, 11, 1)
+  Iniciar(robot3, 12, 1)
+fin

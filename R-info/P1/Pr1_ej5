@@ -1,0 +1,74 @@
+programa Pr1_ej5
+procesos
+  proceso realizarAv(E distancia:numero)
+  comenzar
+    repetir distancia-1
+      mientras(HayFlorEnLaEsquina)
+        tomarFlor
+      mover
+    mientras(HayFlorEnLaBolsa)
+      depositarFlor
+  fin
+  proceso realizarCa(E distancia:numero)
+  comenzar
+    repetir distancia-1
+      mientras(HayPapelEnLaEsquina)
+        tomarPapel
+      mover
+    mientras(HayPapelEnLaBolsa)
+      depositarPapel
+  fin
+areas
+  area1a:AreaP(1, 80, 15, 80)
+  area1b:AreaP(1, 75, 15, 75)
+  area2a:AreaP(75, 80, 75, 100)
+  area2b:AreaP(80, 80, 80, 100)
+  area3a:AreaP(70, 15, 100, 15)
+  area3b:AreaP(70, 10, 100, 10)
+  area4a:AreaP(10, 1, 10, 10)
+  area4b:AreaP(15, 1, 15, 10) 
+robots
+  robot tipo1
+  variables
+    recorrido:numero
+  comenzar
+    derecha
+    si(PosCa = 75)
+      recorrido:=15
+    sino
+      recorrido:=30
+    realizarAv(recorrido)
+    Pos((PosAv - (recorrido-1)), PosCa + 5)
+    realizarAv(recorrido)
+  fin
+  robot tipo2
+  variables
+    recorrido:numero
+  comenzar
+    si(PosAv = 75)
+      recorrido:=20
+    sino
+      recorrido:=10
+    realizarCa(recorrido)
+    Pos(PosAv + 5, (PosCa - (recorrido-1))) 
+    realizarCa(recorrido)
+  fin
+variables
+  robot1:tipo1
+  robot2:tipo2
+  robot3:tipo1
+  robot4:tipo2
+comenzar
+  AsignarArea(robot1, area1a)
+  AsignarArea(robot1, area1b)
+  AsignarArea(robot2, area2a)
+  AsignarArea(robot2, area2b)
+  AsignarArea(robot3, area3a)
+  AsignarArea(robot3, area3b)
+  AsignarArea(robot4, area4a)
+  AsignarArea(robot4, area4b)
+  Iniciar(robot1, 1, 75)
+  Iniciar(robot2, 75, 80)
+  Iniciar(robot3, 70, 10)
+  Iniciar(robot4, 10, 1)
+fin

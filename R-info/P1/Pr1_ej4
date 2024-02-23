@@ -1,0 +1,72 @@
+programa Pr1_ej4
+procesos
+  proceso mod(E dividendo:numero; E divisor:numero; ES resto:numero)
+  variables
+    repeticiones:numero
+  comenzar
+    repeticiones:=dividendo/divisor
+    resto:= dividendo - (divisor* repeticiones)
+  fin
+  proceso esPar(E Av:numero; ES par:boolean)
+  variables
+    resto:numero
+  comenzar
+    mod(Av, 2, resto)
+    si(resto=0)
+      par:=V
+    sino
+      par:=F
+  fin
+  proceso realizarAvPapel
+  comenzar
+    repetir 99
+      mientras(HayPapelEnLaEsquina)
+        tomarPapel
+      mover
+  fin
+  proceso realizarAvFlor
+  comenzar
+    repetir 99
+      mientras(HayFlorEnLaEsquina)
+        tomarFlor
+      mover
+  fin
+  proceso limpiarArea(E Av:numero)
+  variables
+    par:boolean
+  comenzar
+    esPar(Av, par)
+    si(par)
+      repetir 24
+        realizarAvPapel
+        Pos(PosAv+1, 1)
+      realizarAvPapel
+    sino
+      repetir 24
+        realizarAvFlor
+        Pos(PosAv+1, 1)
+      realizarAvFlor
+  fin
+areas
+  area1:AreaP(1, 1, 25, 100)
+  area2:AreaP(26, 1, 50, 100)
+  area3:AreaP(51, 1, 75, 100)
+  area4:AreaP(76, 1, 100, 100)
+robots
+  robot tipo1
+  comenzar
+    limpiarArea(PosAv)
+    Pos(PosAv+26, 1)
+    limpiarArea(PosAv)
+  fin
+variables
+  robot1: tipo1
+  robot2: tipo1
+comenzar
+  AsignarArea(robot1, area1)
+  AsignarArea(robot1, area3)
+  AsignarArea(robot2, area2)
+  AsignarArea(robot2, area4)
+  Iniciar(robot1, 1, 1)
+  Iniciar(robot2, 26, 1)
+fin

@@ -1,0 +1,123 @@
+programa Pr3_ej3
+procesos
+  proceso identificarRobots
+  comenzar
+    EnviarMensaje(1, robot1)
+    EnviarMensaje(2, robot2)
+    EnviarMensaje(3, robot3)
+    EnviarMensaje(4, robot4)
+  fin
+  proceso notificarEsquina(E av:numero; E ca:numero)
+  comenzar
+    EnviarMensaje(av, robot1)
+    EnviarMensaje(ca, robot1)
+    EnviarMensaje(av, robot2)
+    EnviarMensaje(ca, robot2)
+    EnviarMensaje(av, robot3)
+    EnviarMensaje(ca, robot3)
+    EnviarMensaje(av, robot4)
+    EnviarMensaje(ca, robot4)
+  fin
+  proceso maximo(E quien:numero; E cantF:numero; ES maxR:numero; ES maxF:numero)
+  comenzar
+    si(cantF > maxF)
+      maxF:=cantF
+      maxR:=quien
+  fin
+  proceso recibirFlores(E quien:numero; ES cantF:numero)
+  comenzar
+    si(quien=1)
+      RecibirMensaje(cantF, robot1)
+    sino
+      si(quien=2)
+        RecibirMensaje(cantF, robot2)
+      sino
+        si(quien=3)
+          RecibirMensaje(cantF, robot3)
+        sino
+          RecibirMensaje(cantF, robot4)
+  fin
+  proceso evaluarFlores(ES maxF:numero; ES maxR:numero)
+  variables
+    quien, cantF:numero
+  comenzar
+    repetir 4
+      RecibirMensaje(quien, *)
+      recibirFlores(quien, cantF)
+      maximo(quien, cantF, maxR, maxF)
+  fin
+  proceso irEsquina(E avR:numero; E caR:numero; E avIni:numero; E caIni:numero ES cantF:numero; ES continuar:boolean)
+  comenzar
+    BloquearEsquina(avR, caR)
+    Pos(avR, caR)
+    continuar:=HayFlorEnLaEsquina
+    si(continuar)
+      tomarFlor
+      cantF:= cantF + 1
+    Pos(avIni, caIni)
+    LiberarEsquina(avR, caR)
+  fin
+areas
+  AreaInicial: AreaC(1, 1, 5, 1)
+  AreaRecoleccion: AreaPC(2, 2, 10, 10)
+robots
+  robot jefe
+  variables
+    avRan, caRan:numero
+    maxF, maxR:numero
+  comenzar
+    maxF:=-1
+    maxR:=0
+    identificarRobots
+    
+    Random(avRan, 2, 10)
+    Random(caRan, 2, 10)
+    notificarEsquina(avRan, caRan)
+    
+    evaluarFlores(maxF, maxR)
+    
+    Informar('Ganador', maxR)
+    
+  fin
+  robot recolector
+  variables
+    quienSoy, avR, caR, avIni, caIni, cantF:numero
+    continuar:boolean
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    continuar:=V
+    cantF:=0
+    
+    RecibirMensaje(quienSoy, robotJefe)
+    RecibirMensaje(avR, robotJefe)
+    RecibirMensaje(caR, robotJefe)
+    
+    mientras(continuar)
+      irEsquina(avR, caR, avIni, caIni, cantF, continuar)
+    
+    EnviarMensaje(quienSoy, robotJefe)
+    EnviarMensaje(cantF, robotJefe)
+  fin
+variables
+  robotJefe: jefe
+  robot1: recolector
+  robot2: recolector
+  robot3: recolector
+  robot4: recolector
+comenzar
+  AsignarArea(robotJefe, AreaInicial)
+  AsignarArea(robot1, AreaInicial)
+  AsignarArea(robot2, AreaInicial)
+  AsignarArea(robot3, AreaInicial)
+  AsignarArea(robot4, AreaInicial)
+  AsignarArea(robot1, AreaRecoleccion)
+  AsignarArea(robot2, AreaRecoleccion)
+  AsignarArea(robot3, AreaRecoleccion)
+  AsignarArea(robot4, AreaRecoleccion)
+  Iniciar(robotJefe, 1, 1)
+  Iniciar(robot1, 2, 1)
+  Iniciar(robot2, 3, 1)
+  Iniciar(robot3, 4, 1)
+  Iniciar(robot4, 5, 1)
+fin
