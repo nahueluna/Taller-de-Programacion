@@ -1,0 +1,12 @@
+#Ignora todo
+*
+#Anula la ignorancia de los directorios
+!*.*
+!*/
+#Ignora los .o
+*.o
+*.exe
+*.pdf
+*/Pruebas
+*/pruebas
+*R-info/r-Info-2.9.5.jar
